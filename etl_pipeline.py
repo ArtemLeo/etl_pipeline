@@ -1,7 +1,8 @@
 # В цьому файлі реалізована основна логіка ETL пайплайну.
 
 import requests
-from config import API_BASE_URL, CLIENT_ID, CLIENT_SECRET
+import psycopg2
+from config import API_BASE_URL, CLIENT_ID, CLIENT_SECRET, DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
 
 
 def get_data_from_api(endpoint, start_date, page=0, limit=10000):
@@ -15,6 +16,23 @@ def get_data_from_api(endpoint, start_date, page=0, limit=10000):
         return response.json()
     else:
         raise Exception(f"Failed to get data: {response.status_code}, {response.text}")
+
+
+# Функція для підключення до бази даних
+def connect_to_db():
+    try:
+        connection = psycopg2.connect(
+            dbname=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT
+        )
+        print("Connected to the database")
+        return connection
+    except Exception as e:
+        print(f"Failed to connect to the database: {e}")
+        return None
 
 
 # Приклад використання функції
