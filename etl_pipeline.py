@@ -35,6 +35,27 @@ def connect_to_db():
         return None
 
 
+# Приклад створення таблиці для workers
+def create_tables(connection):
+    try:
+        cursor = connection.cursor()
+
+        # SQL-запит для створення таблиці workers
+        create_workers_table = """
+        CREATE TABLE IF NOT EXISTS workers (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            department VARCHAR(255)
+        );
+        """
+        cursor.execute(create_workers_table)
+        connection.commit()
+        cursor.close()
+        print("Tables created successfully")
+    except Exception as e:
+        print(f"Failed to create tables: {e}")
+
+
 # Приклад використання функції
 if __name__ == "__main__":
     start_date = "2024-07-01T00:00:00"
