@@ -1,5 +1,6 @@
 # В цьому файлі реалізована основна логіка ETL пайплайну.
 
+import os
 import requests
 import psycopg2
 from config import API_BASE_URL, CLIENT_ID, CLIENT_SECRET, DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
@@ -56,8 +57,34 @@ def create_tables(connection):
         print(f"Failed to create tables: {e}")
 
 
-# Приклад використання функції
+# Функція для отримання даних з API
+def fetch_data_from_api(url, params=None):
+    headers = {
+        "CF-Access-Client-Id": os.getenv("CLIENT_ID"),
+        "CF-Access-Client-Secret": os.getenv("CLIENT_SECRET")
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch data: {e}")
+        return None
+
+
 if __name__ == "__main__":
-    start_date = "2024-07-01T00:00:00"
-    data = get_data_from_api("works_duration/", start_date)
-    print(data)
+    # Отримуємо URL з .env файлу
+    url = os.getenv("API_WORKS_DURATION_URL")
+    params = {
+        "page": 0,
+        "limit": 10000,
+        "date_time_start": "2024-07-01T00:00:00"
+    }
+
+    data = fetch_data_from_api(url, params)
+
+    if data:
+        print("Data fetched successfully")
+        # Тут можна додати код для обробки та збереження даних в базу
