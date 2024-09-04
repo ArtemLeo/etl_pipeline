@@ -1,9 +1,9 @@
 # Для запуску ETL процесу
 
 
-from etl_pipeline import get_data_from_api
+from etl_pipeline import connect_to_db
 
 if __name__ == "__main__":
-    start_date = "2024-07-01T00:00:00"
-    data = get_data_from_api("works_duration/", start_date)
-    print(data)
+    db_connection = connect_to_db()
+    if db_connection:
+        db_connection.close()
